@@ -1,0 +1,50 @@
+plugins {
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'java'
+}
+
+group = 'com.adelegue'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+tasks.withType(JavaCompile).each {
+    it.options.compilerArgs.add('--enable-preview')
+}
+
+tasks.withType(JavaExec) {
+    jvmArgs += '--enable-preview'
+}
+
+test {
+    jvmArgs(['--enable-preview'])
+    useJUnitPlatform()
+}
+
+
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://maifhorizon.bintray.com/maven"
+        credentials {
+            username System.getenv('BINTRAY_USER')
+            password System.getenv('BINTRAY_PASS')
+        }
+    }
+}
+
+def postgresqlVersion = "42.2.8"
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "io.vavr:vavr:0.10.0"
+    implementation "org.projectlombok:lombok:1.18.10"
+    implementation "org.liquibase:liquibase-core:3.8.2"
+    annotationProcessor("org.projectlombok:lombok:1.18.10")
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    compile("org.springframework.boot:spring-boot-devtools")
+    testImplementation 'io.projectreactor:reactor-test'
+}
+
