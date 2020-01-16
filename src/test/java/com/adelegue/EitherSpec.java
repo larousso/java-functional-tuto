@@ -3,6 +3,7 @@ package com.adelegue;
 import com.adelegue.libs.User;
 import com.adelegue.libs.UserRepository;
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import org.junit.jupiter.api.Test;
@@ -111,9 +112,9 @@ public class EitherSpec {
         List<Either<String, String>> eithersError = List(Left("Et non"), Right("Hello"), Right("World"), Left("c'est en erreur"));
 
         // TODO Have a look at static methods
-        Either<String, List<String>> listEithers = null;
+        Either<String, Seq<String>> listEithers = null;
         // TODO Have a look at static methods
-        Either<String, List<String>> listEithersError = null;
+        Either<String, Seq<String>> listEithersError = null;
 
         assertThat(listEithers).isEqualTo(Right(List("Hello", "World")));
         assertThat(listEithersError).isEqualTo(Left("Et non"));
@@ -126,9 +127,9 @@ public class EitherSpec {
         List<Either<String, String>> eithersError = List(Left("Oh no"), Right("Hello"), Right("World"), Left("It's an error"));
 
         // TODO Have a look to static methods
-        Either<List<String>, List<String>> listEithers = null;
+        Either<Seq<String>, Seq<String>> listEithers = null;
         // TODO Have a look to static methods
-        Either<List<String>, List<String>> listEithersError = null;
+        Either<Seq<String>, Seq<String>> listEithersError = null;
 
         assertThat(listEithers).isEqualTo(Right(List("Hello", "World")));
         assertThat(listEithersError).isEqualTo(Left(List("Oh no", "It's an error")));
@@ -151,13 +152,13 @@ public class EitherSpec {
     void traverse() {
         var userRepository = new UserRepository();
         var listOfUsers = List(
-                new User(null, "Agent 41"),
-                new User(null, "Agent 42"),
-                new User(null, "Agent 43")
+                new User("1", "Agent 41"),
+                new User("2", "Agent 42"),
+                new User("3", "Agent 43")
         );
 
         // TODO have a look at the traverse method and use it with the previously implemented createIfNotExists
-        Either<List<String>, List<User>> batchCreate = null;
+        Either<Seq<String>, Seq<User>> batchCreate = null;
 
         assertThat(batchCreate).isEqualTo(Right(List(
                 new User("1", "Agent 41"),
@@ -167,7 +168,9 @@ public class EitherSpec {
     }
 
     private Either<String, User> createIfNotExists(UserRepository userRepository, User user) {
-        // TODO in order to validate if the user already exists, you need to perform a get by id and then create the user. Use the previously used method in order to to that
+        // TODO in order to validate if the user already exists, you need to perform a get by id and then create the user.
+        //  Use the previously used method in order to to that
+        //  You can use the swap method to inverse right and left if needed
         return Either.left("Not implemented");
     }
 
