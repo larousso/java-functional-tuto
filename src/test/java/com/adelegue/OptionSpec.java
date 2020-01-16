@@ -1,11 +1,13 @@
 package com.adelegue;
 
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.*;
+import static java.util.function.Function.identity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OptionSpec {
@@ -13,7 +15,7 @@ public class OptionSpec {
     @Test
     void optionWithAValue() {
         // TODO create a option containing "A value"
-        Option<String> mayBeValue = null;
+        Option<String> mayBeValue = Option.some("A value");
 
         assertThat(mayBeValue).isEqualTo(Some("A value"));
     }
@@ -22,7 +24,7 @@ public class OptionSpec {
     @Test
     void emptyOption() {
         // TODO create an empty option
-        Option<String> mayBeValue = null;
+        Option<String> mayBeValue = Option.none();
 
         assertThat(mayBeValue).isEmpty();
     }
@@ -32,9 +34,9 @@ public class OptionSpec {
         Option<String> mayBeValue = Some("A text");
 
         // TODO transform the value inside the option
-        Option<String> mayBeUpper = null;
+        Option<String> mayBeUpper = mayBeValue.map(String::toUpperCase);
 
-        assertThat(mayBeValue).isEqualTo(Some("A TEXT"));
+        assertThat(mayBeUpper).isEqualTo(Some("A TEXT"));
     }
 
     @Test
@@ -42,7 +44,7 @@ public class OptionSpec {
         Option<String> mayBeString = Option.none();
 
         // TODO get the value or a "Default value" if the option is empty
-        String value = null;
+        String value = mayBeString.getOrElse("Default value");
 
         assertThat(value).isEqualTo("Default value");
     }
@@ -54,9 +56,9 @@ public class OptionSpec {
         Option<String> mayBeAnEmpty = Option.none();
 
         // TODO count the caracters inside mayBeString or get 0 by default. Have a look at the fold method
-        Integer value = null;
+        Integer value = mayBeString.fold(() -> 0, str -> str.length());
         // TODO count the caracters inside mayBeAnEmpty or get 0 by default.
-        Integer ifEmpty = null;
+        Integer ifEmpty = mayBeAnEmpty.fold(() -> 0, str -> str.length());
 
         assertThat(value).isEqualTo(26);
         assertThat(ifEmpty).isEqualTo(0);
@@ -77,9 +79,9 @@ public class OptionSpec {
         );
 
         // TODO with options. Have a look at static methods available in Option
-        Option<List<String>> optionOfStrings = null;
+        Option<Seq<String>> optionOfStrings = Option.sequence(options);
         // TODO with optionsWithEmpty
-        Option<List<String>> optionOfStringsWithEmpty = null;
+        Option<Seq<String>> optionOfStringsWithEmpty = Option.sequence(optionsWithEmpty);
 
         assertThat(optionOfStrings).isEqualTo(Some(List("1", "2", "3")));
         assertThat(optionOfStringsWithEmpty).isEqualTo(None());
@@ -90,7 +92,7 @@ public class OptionSpec {
         Option<String> mayBeString = Option.none();
 
         // TODO Either is an option where you why it's empty
-        Either<String, String> either = null;
+        Either<String, String> either = mayBeString.toEither("It's empty ...");
 
         assertThat(either).isEqualTo(Left("It's empty ..."));
     }
@@ -107,7 +109,11 @@ public class OptionSpec {
         String baseApi = "/api/persons";
 
         // TODO complete this part. Remember option is also a list
-        List<String> queryParams = null;
+        List<String> queryParams = List(
+                mayBeEmail.map(email -> "email="+email),
+                mayBeName.map(name -> "name="+name),
+                mayBeZipCode.map(zipCode -> "zipCode="+zipCode)
+        ).flatMap(identity());
 
         if (queryParams.isEmpty()) {
             return baseApi;
