@@ -22,25 +22,25 @@ public class ReactorSpec {
     @Test
     void createMono() {
         // TODO create a Mono in success
-        Mono<String> monoSuccess = null;
+        Mono<String> monoSuccess = Mono.just("Success");
         assertThat(monoSuccess.block()).isEqualTo("Success");
 
         // TODO create a Mono in failure
-        Mono<String> monoFailed = null;
+        Mono<String> monoFailed = Mono.error(new RuntimeException("Oops failed"));
         assertThatThrownBy(() -> monoFailed.block()).hasMessage("Oops failed");
 
         AtomicInteger integer = new AtomicInteger(0);
         // TODO create a lazy Mono that will increment and get the integer once it's used
-        Mono<Integer> deferredMono = null;
+        Mono<Integer> deferredMono = Mono.fromCallable(integer::incrementAndGet);
         assertThat(deferredMono.block()).isEqualTo(1);
 
         // TODO create an empty Mono
-        Mono<String> emptyMono = null;
+        Mono<String> emptyMono = Mono.empty();
         assertThat(emptyMono.blockOptional()).isEmpty();
 
         // TODO create a Mono from a vanilla java CompletionStage
         CompletionStage<String> future = CompletableFuture.completedStage("Future value");
-        Mono<String> futureSuccess = null;
+        Mono<String> futureSuccess = Mono.fromCompletionStage(future);
         assertThat(futureSuccess.block()).isEqualTo("Future value");
     }
 
@@ -48,29 +48,29 @@ public class ReactorSpec {
     @Test
     void createFlux() {
         // TODO create a flux of 2 elements
-        Flux<String> fluxSuccess = null;
+        Flux<String> fluxSuccess = Flux.just("Element 1", "Element 2");
         assertThat(fluxSuccess.toIterable()).containsExactly("Element 1", "Element 2");
 
         // TODO create a failed flux
-        Flux<String> fluxFailed = null;
+        Flux<String> fluxFailed = Flux.error(new RuntimeException("Oops failed"));
         assertThatThrownBy(() -> fluxFailed.blockLast()).hasMessage("Oops failed");
 
         List<String> elements = List.of("Element 1", "Element 2");
         // TODO create a flux from a List
-        Flux<String> fluxFromList = null;
+        Flux<String> fluxFromList = Flux.fromIterable(elements);
         assertThat(fluxFromList.toIterable()).containsExactly("Element 1", "Element 2");
 
         // TODO create an empty flux
-        Flux<String> emptyFlux = null;
+        Flux<String> emptyFlux = Flux.empty();
         assertThat(emptyFlux.toIterable()).isEmpty();
 
         // TODO create a flux from a vanilla java CompletionStage
         CompletionStage<String> future = CompletableFuture.completedStage("Future value");
-        Flux<String> futureSuccess = null;
+        Flux<String> futureSuccess = Mono.fromCompletionStage(future).flux();
         assertThat(futureSuccess.toIterable()).containsExactly("Future value");
 
         // TODO create a flux containing a range of integer from 1 to 5.
-        Flux<Integer> range = null;
+        Flux<Integer> range = Flux.range(1, 5);
         assertThat(range.toIterable()).containsExactly(1, 2, 3, 4, 5);
     }
 
@@ -79,7 +79,7 @@ public class ReactorSpec {
         Mono<String> mono = Mono.just("A value");
 
         // TODO find a way to transform the string to his upper case variant
-        Mono<String> upper = null;
+        Mono<String> upper = mono.map(String::toUpperCase);
 
         assertThat(upper.block()).isEqualTo("A VALUE");
     }
@@ -89,7 +89,7 @@ public class ReactorSpec {
         Flux<String> flux = Flux.just("Element 1", "Element 2", "Element 3", "Element 4");
 
         // TODO find a way to transform each element to upper cases
-        Flux<String> upper = null;
+        Flux<String> upper = flux.map(String::toUpperCase);
 
         assertThat(upper.toIterable()).containsExactly("ELEMENT 1", "ELEMENT 2", "ELEMENT 3", "ELEMENT 4");
     }
@@ -99,7 +99,7 @@ public class ReactorSpec {
         Mono<String> mono = Mono.just("A value");
 
         // TODO filter the value if it's equal to "A value"
-        Mono<String> filtered = null;
+        Mono<String> filtered = mono.filter(str -> !str.equals("A value"));
 
         assertThat(filtered.blockOptional()).isEmpty();
     }
@@ -109,7 +109,7 @@ public class ReactorSpec {
         Flux<String> flux = Flux.just("Element 1", "Element 2", "Element 3", "Element 4");
 
         // TODO filter the value if it's equal to "Element 3"
-        Flux<String> filtered = null;
+        Flux<String> filtered = flux.filter(str -> !str.equals("Element 3"));
 
         assertThat(filtered.toIterable()).containsExactly("Element 1", "Element 2", "Element 4");
     }
@@ -119,7 +119,7 @@ public class ReactorSpec {
         Flux<Integer> flux = Flux.just(1, 2, 3, 4, 5);
 
         // TODO sum all the integers of the flux
-        Mono<Integer> sum = null;
+        Mono<Integer> sum = flux.reduce(0, Integer::sum);
 
         assertThat(sum.block()).isEqualTo(15);
     }
@@ -130,7 +130,7 @@ public class ReactorSpec {
         Mono<String> monoNpe = Mono.error(new NullPointerException("Oops"));
 
         // TODO recover only npe
-        Mono<String> recoverFromNpe = null;
+        Mono<String> recoverFromNpe = monoNpe.onErrorReturn(NullPointerException.class, "Recovered");
 
         assertThat(recoverFromNpe.block()).isEqualTo("Recovered");
     }
@@ -144,7 +144,7 @@ public class ReactorSpec {
         Mono<String> monoId = Mono.just("1");
 
         // TODO monoId is an id that will be available later. Call userRepository.getByIdAsync when it's here
-        Mono<User> user = null;
+        Mono<User> user = monoId.flatMap(id -> userRepository.getByIdAsync(id));
 
         assertThat(user.block()).isEqualTo(expectedUser);
     }
@@ -162,7 +162,7 @@ public class ReactorSpec {
         Flux<String> fluxOfName = Flux.just("John doe", "Agent 42");
 
         // TODO fluxOfName is names that will be available later. For each name Call userRepository.findByNameAsync when it's here
-        Flux<User> user = null;
+        Flux<User> user = fluxOfName.flatMap(name -> userRepository.findByNameAsync(name));
 
         assertThat(user.toIterable()).containsExactly(
                 user1,
@@ -183,7 +183,7 @@ public class ReactorSpec {
         Flux<String> fluxOfName = Flux.just("John doe", "Agent 42");
 
         // TODO fluxOfName is names that will be available later. For each name Call userRepository.findByName when it's here
-        Flux<User> user = null;
+        Flux<User> user = fluxOfName.flatMapIterable(name -> userRepository.findByName(name));
 
         assertThat(user.toIterable()).containsExactly(
                 user1,
@@ -198,7 +198,7 @@ public class ReactorSpec {
         Mono<Integer> monoAge = Mono.just(18);
 
         // TODO combine monoString and monoAge to concatenate the two. Have a look at static methods on Mono
-        Mono<String> combined = null;
+        Mono<String> combined = Mono.zip(monoString, monoAge, (text, age) -> text + age);
 
         assertThat(combined.block()).isEqualTo("He is 18");
     }
@@ -208,7 +208,7 @@ public class ReactorSpec {
         Flux<Integer> range = Flux.range(1, 5);
 
         // TODO add a delay ofs 500 millis between each elements
-        Flux<Integer> delayed = null;
+        Flux<Integer> delayed = range.delayElements(Duration.ofMillis(500));
 
         LocalDateTime start = LocalDateTime.now();
         delayed.blockLast();
@@ -223,7 +223,7 @@ public class ReactorSpec {
         Flux<String> elements = Flux.interval(Duration.ofMillis(1)).map(__ -> "New element");
 
         // TODO elements is an infinite stream that will never stop. keep only the 3 first elemens
-        Flux<String> first = null;
+        Flux<String> first = elements.take(3);
 
         assertThat(first.toIterable()).containsExactly("New element", "New element", "New element");
 
