@@ -1,6 +1,7 @@
 package com.adelegue;
 
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ public class OptionSpec {
         // TODO transform the value inside the option
         Option<String> mayBeUpper = null;
 
-        assertThat(mayBeValue).isEqualTo(Some("A TEXT"));
+        assertThat(mayBeUpper).isEqualTo(Some("A TEXT"));
     }
 
     @Test
@@ -77,9 +78,9 @@ public class OptionSpec {
         );
 
         // TODO with options. Have a look at static methods available in Option
-        Option<List<String>> optionOfStrings = null;
+        Option<Seq<String>> optionOfStrings = null;
         // TODO with optionsWithEmpty
-        Option<List<String>> optionOfStringsWithEmpty = null;
+        Option<Seq<String>> optionOfStringsWithEmpty = null;
 
         assertThat(optionOfStrings).isEqualTo(Some(List("1", "2", "3")));
         assertThat(optionOfStringsWithEmpty).isEqualTo(None());
