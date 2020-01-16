@@ -15,7 +15,7 @@ public class EitherSpec {
 
     @Test
     void createSuccess() {
-        // TODO
+        // TODO create a right either
         Either<String, Integer> success = null;
 
         assertThat(success).isEqualTo(Right(10));
@@ -23,7 +23,7 @@ public class EitherSpec {
 
     @Test
     void createError() {
-        // TODO
+        // TODO create a left either
         Either<String, Integer> error = null;
 
         assertThat(error).isEqualTo(Left("Oops an error"));
@@ -34,9 +34,9 @@ public class EitherSpec {
         Either<String, Integer> success = Either.right(10);
         Either<String, Integer> failure = Either.left("An error");
 
-        // TODO
+        // TODO convert success to option
         Option<Integer> optionSuccess = null;
-        // TODO
+        // TODO convert failure to option
         Option<Integer> optionFailure = null;
 
         assertThat(optionSuccess).isEqualTo(Some(10));
@@ -47,17 +47,17 @@ public class EitherSpec {
     void transformSuccess() {
         Either<String, Integer> success = Either.right(10);
 
-        // TODO
+        // TODO transform the right side to "Value 10" if the either is a `Right` one. Find the good method looking at method signature
         Either<String, String> transformed = null;
 
-        assertThat(transformed).isEqualTo(Right("Valeur 10"));
+        assertThat(transformed).isEqualTo(Right("Value 10"));
     }
 
     @Test
     void transformError() {
         Either<String, Integer> failure = Either.left("An error");
 
-        // TODO
+        // TODO transform the left side to "A really big error" if the either is a `Left` one. Find the good method looking at method signature
         Either<String, Integer> transformed = null;
 
         assertThat(transformed).isEqualTo(Left("A really big error"));
@@ -68,9 +68,9 @@ public class EitherSpec {
         Either<String, Integer> success = Either.right(10);
         Either<String, Integer> failure = Either.left("Une erreur");
 
-        // TODO
+        // TODO extract the value of success if the either is a `Right` or get a default value if it's a `Left`
         Integer getOrDefaultSuccess = null;
-        // TODO
+        // TODO extract the value of failure if the either is a `Right` or get a default value if it's a `Left`
         Integer getOrDefaultFailure = null;
 
         assertThat(getOrDefaultSuccess).isEqualTo(10);
@@ -83,7 +83,7 @@ public class EitherSpec {
         UserRepository userRepository = new UserRepository();
         Either<String, User> userOuErreur = Either.right(new User(null, "John Doe"));
 
-        // TODO
+        // TODO userOuErreur is a validated User that need to be saved in DB using userRepository.create. In return you will have a user with an id.
         Either<String, User> savedInDb = null;
 
         assertThat(savedInDb).isEqualTo(Right(new User("1", "John Doe")));
@@ -99,10 +99,10 @@ public class EitherSpec {
                 Right(3)
         );
 
-        // TODO
-        List<Integer> filtree = null;
+        // TODO filter the list to keep only the Right values. Tips: an either could be converted to List
+        List<Integer> filtered = null;
 
-        assertThat(filtree).containsExactly(1, 2, 3);
+        assertThat(filtered).containsExactly(1, 2, 3);
     }
 
     @Test
@@ -110,9 +110,9 @@ public class EitherSpec {
         List<Either<String, String>> eithers = List(Right("Hello"), Right("World"));
         List<Either<String, String>> eithersError = List(Left("Et non"), Right("Hello"), Right("World"), Left("c'est en erreur"));
 
-        // TODO Have a look to static methods
+        // TODO Have a look at static methods
         Either<String, List<String>> listEithers = null;
-        // TODO Have a look to static methods
+        // TODO Have a look at static methods
         Either<String, List<String>> listEithersError = null;
 
         assertThat(listEithers).isEqualTo(Right(List("Hello", "World")));
@@ -134,10 +134,11 @@ public class EitherSpec {
         assertThat(listEithersError).isEqualTo(Left(List("Oh no", "It's an error")));
     }
 
+
     @Test
     void bigCase() {
         UserRepository userRepository = new UserRepository();
-        userRepository.creer(new User("1", "Agent 42"));
+        userRepository.create(new User("1", "Agent 42"));
 
         Either<String, User> agent_42 = createIfNotExists(userRepository, new User("1", "Agent 42"));
         assertThat(agent_42).isEqualTo(Left("The user already exists"));
@@ -145,8 +146,28 @@ public class EitherSpec {
         assertThat(john_doe).isEqualTo(Right(new User("1", "John Doe")));
     }
 
+
+    @Test
+    void traverse() {
+        var userRepository = new UserRepository();
+        var listOfUsers = List(
+                new User(null, "Agent 41"),
+                new User(null, "Agent 42"),
+                new User(null, "Agent 43")
+        );
+
+        // TODO have a look at the traverse method and use it with the previously implemented createIfNotExists
+        Either<List<String>, List<User>> batchCreate = null;
+
+        assertThat(batchCreate).isEqualTo(Right(List(
+                new User("1", "Agent 41"),
+                new User("2", "Agent 42"),
+                new User("3", "Agent 43")
+        )));
+    }
+
     private Either<String, User> createIfNotExists(UserRepository userRepository, User user) {
-        // TODO
+        // TODO in order to validate if the user already exists, you need to perform a get by id and then create the user. Use the previously used method in order to to that
         return Either.left("Not implemented");
     }
 
