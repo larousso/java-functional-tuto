@@ -13,8 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class UserRepository {
-    private AtomicInteger ids = new AtomicInteger(0);
-    private ConcurrentHashMap<String, User> users =  new ConcurrentHashMap<>();
+    private final AtomicInteger ids = new AtomicInteger(0);
+    private final ConcurrentHashMap<String, User> users =  new ConcurrentHashMap<>();
 
     public String nextId() {
         return String.valueOf(ids.incrementAndGet());
